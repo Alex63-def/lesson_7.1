@@ -106,7 +106,7 @@ void ATurret::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* O
 {
 	if(!Cast<AEnemyTankPawn>(OtherActor))
 	// запомним актор который с нами пересекся 
-	OtherActors.Add(OtherActor);
+		OtherActors.Add(OtherActor);
 
 	// проверяем есть ли цель - если ее нет, то вызываем поиск другой цели
 	if (!Target.IsValid())

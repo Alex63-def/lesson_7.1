@@ -38,7 +38,8 @@ void AEnemyTankPawn::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AA
 {
 	auto AiController = Cast<AEnemyAIController>(GetController());
 	if (AiController)
-		AiController->AddTarget(OtherActor);
+		if (!Cast<AEnemyTankPawn>(OtherActor))
+			AiController->AddTarget(OtherActor);
 }
 
 void AEnemyTankPawn::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
