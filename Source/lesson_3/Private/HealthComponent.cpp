@@ -58,12 +58,36 @@ void UHealthComponent::TakeDamageTank(FDamageData DamageData)
 	}
 }
 
+void UHealthComponent::TakeDamageFactoty(FDamageData DamageData)
+{
+	float PrevValue = CurrentHealthFactory;
+
+	CurrentHealthFactory -= DamageData.DamageValue;
+	if (CurrentHealthFactory < 0)
+	{
+		CurrentHealthFactory = 0;
+	}
+
+	if (!FMath::IsNearlyEqual(PrevValue, CurrentHealthFactory)) // если было изменение в хп то оповещаем
+		if (OnHealthChanged.IsBound())
+			OnHealthChanged.Broadcast(CurrentHealthFactory);
+
+
+	if (FMath::IsNearlyZero(CurrentHealthFactory)) // проверим что текущее значение упало до нуля - этот метод проверяет что значение флоат находится очень близко к нулю
+	{
+		if (OnDeath.IsBound())
+			OnDeath.Broadcast();
+	}
+}
+
 // Called when the game starts
 void UHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
 	CurrentHealthTurret = MaxHealthTurret;
+
+	CurrentHealthFactory = MaxHealthFactory;
 
 	CurrentHealthTank = MaxHealthTank;
 	

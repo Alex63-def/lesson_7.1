@@ -5,6 +5,7 @@
 #include "DamageTarget.h"
 #include "UnitPawn.h"
 #include "lesson_3/lesson_3.h"
+#include "BaseFactory.h"
 
 // Sets default values
 AProjectile::AProjectile()
@@ -54,18 +55,32 @@ void AProjectile::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 	}
 
 	if (auto Unit = Cast<AUnitPawn>(OtherActor))
+	{
 		if (Unit->HealthComponent->GetHealthTurret() == 0)
 		{
 			FExpData ExpData;
 			ExpData.ExperienceValue = Unit->Experience;
 			ExpData.Enemy = OtherActor;
-			
+
 			if (OnExpEventProjectile.IsBound())
 				OnExpEventProjectile.Broadcast(ExpData);
-			
+
 			if (OnKillEvent.IsBound())
 				OnKillEvent.Broadcast();
 		}
+	}
+	else if (auto Unitt = Cast<ABaseFactory>(OtherActor))
+	{
+		FExpData ExpData;
+		ExpData.ExperienceValue = Unitt->Experience;
+		ExpData.Enemy = OtherActor;
+
+		if (OnExpEventProjectile.IsBound())
+			OnExpEventProjectile.Broadcast(ExpData);
+
+		if (OnKillEvent.IsBound())
+			OnKillEvent.Broadcast();
+	}
 
 	auto Temp = GetActorLocation();
 	SetActorLocation({-100, -100, -100});

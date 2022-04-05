@@ -8,12 +8,13 @@
 #include "Components/ArrowComponent.h"
 #include "HealthComponent.h"
 #include "DamageTarget.h"
+#include "IScorable.h"
 #include "Engine/TargetPoint.h"
 #include "EnemyTankPawn.h"
 #include "BaseFactory.generated.h"
 
 UCLASS()
-class LESSON_3_API ABaseFactory : public AActor, public IDamageTarget
+class LESSON_3_API ABaseFactory : public AActor, public IDamageTarget, public IIScorable
 {
 	GENERATED_BODY()
 	
@@ -51,6 +52,10 @@ public:
 
 	virtual void TakeDamage(FDamageData Damage) override;
 
+	void OnHealthChanged(float CurrentHealth);
+
+	void OnDeath();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -69,4 +74,8 @@ private:
 
 	FTimerHandle Timer;
 
+public:
+
+	float Experience = 100;
 };
+

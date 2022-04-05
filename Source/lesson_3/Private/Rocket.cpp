@@ -4,6 +4,7 @@
 #include "Rocket.h"
 #include "DamageTarget.h"
 #include "UnitPawn.h"
+#include "BaseFactory.h"
 
 // Sets default values
 ARocket::ARocket()
@@ -62,6 +63,7 @@ void ARocket::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* O
 	}
 
 	if (auto Unit = Cast<AUnitPawn>(OtherActor))
+	{
 		if (Unit->HealthComponent->GetHealthTurret() == 0)
 		{
 			FExpData ExpData;
@@ -74,6 +76,19 @@ void ARocket::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* O
 			if (OnKillEvent.IsBound())
 				OnKillEvent.Broadcast();
 		}
+	}
+	else if (auto Unitt = Cast<ABaseFactory>(OtherActor))
+	{
+		FExpData ExpData;
+		ExpData.ExperienceValue = Unitt->Experience;
+		ExpData.Enemy = OtherActor;
+
+		if (OnExpEventRocket.IsBound())
+			OnExpEventRocket.Broadcast(ExpData);
+
+		if (OnKillEvent.IsBound())
+			OnKillEvent.Broadcast();
+	}
 
 	AudioEffect->Stop();
 	ShootEffect->DeactivateSystem();

@@ -5,6 +5,7 @@
 #include "DrawDebugHelpers.h"
 #include "DamageTarget.h"
 #include "UnitPawn.h"
+#include "BaseFactory.h"
 
 // Sets default values
 AFlameCannon::AFlameCannon()
@@ -61,29 +62,55 @@ void AFlameCannon::Shoot(float Value, float Overheat)
 		if (bHasHit)
 		{
 			End = Result.Location;
-			auto Unit = Cast<AUnitPawn>(Result.GetActor());
-
-			if (Result.Actor.IsValid())
+			if (auto Unit = Cast<AUnitPawn>(Result.GetActor()))
 			{
-				auto Target = Cast<IDamageTarget>(Result.Actor);
-				if (Target)
+				if (Result.Actor.IsValid())
 				{
-					FDamageData DamageData;
-					DamageData.DamageValue = FlameDamage;
-					DamageData.Instigator = this;
-					Target->TakeDamage(DamageData);
+					auto Target = Cast<IDamageTarget>(Result.Actor);
+					if (Target)
+					{
+						FDamageData DamageData;
+						DamageData.DamageValue = FlameDamage;
+						DamageData.Instigator = this;
+						Target->TakeDamage(DamageData);
+					}
+				}
+				if (!Result.Actor.IsValid())
+				{
+					FExpData ExpData;
+					ExpData.ExperienceValue = Unit->Experience;
+					ExpData.Enemy = Unit;
+
+					if (OnExpEventFlame.IsBound())
+						OnExpEventFlame.Broadcast(ExpData);
+
+					OnKill();
 				}
 			}
-			if (!Result.Actor.IsValid())
+			else if (auto Unitt = Cast<ABaseFactory>(Result.GetActor()))
 			{
-				FExpData ExpData;
-				ExpData.ExperienceValue = Unit->Experience;
-				ExpData.Enemy = Unit;
+				if (Result.Actor.IsValid())
+				{
+					auto Target = Cast<IDamageTarget>(Result.Actor);
+					if (Target)
+					{
+						FDamageData DamageData;
+						DamageData.DamageValue = FlameDamage;
+						DamageData.Instigator = this;
+						Target->TakeDamage(DamageData);
+					}
+				}
+				if (!Result.Actor.IsValid())
+				{
+					FExpData ExpData;
+					ExpData.ExperienceValue = Unitt->Experience;
+					ExpData.Enemy = Unitt;
 
-				if (OnExpEventFlame.IsBound())
-					OnExpEventFlame.Broadcast(ExpData);
+					if (OnExpEventFlame.IsBound())
+						OnExpEventFlame.Broadcast(ExpData);
 
-				OnKill();
+					OnKill();
+				}
 			}
 		}
 

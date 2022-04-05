@@ -23,6 +23,8 @@ ABaseFactory::ABaseFactory()
 	SpawnPoint->SetupAttachment(RootComponent);
 
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>("HealthComponent");
+	HealthComponent->OnHealthChanged.AddUObject(this, &ABaseFactory::OnHealthChanged);
+	HealthComponent->OnDeath.AddUObject(this, &ABaseFactory::OnDeath);
 }
 
 // Called when the game starts or when spawned
@@ -44,7 +46,7 @@ void ABaseFactory::Tick(float DeltaTime)
 void ABaseFactory::TakeDamage(FDamageData Damage)
 {
 	if (HealthComponent)
-		HealthComponent->TakeDamageTank(Damage);
+		HealthComponent->TakeDamageFactoty(Damage);
 }
 
 void ABaseFactory::OnTankSpawnTick()
@@ -60,3 +62,24 @@ void ABaseFactory::OnTankSpawnTick()
 	// заканчиваем создание танка, дальше он спавнится с заданными параметрами
 	UGameplayStatics::FinishSpawningActor(Tank, SpawnPoint->GetComponentTransform());
 }													
+
+void ABaseFactory::OnHealthChanged(float CurrentHealthFactory)
+{
+	GEngine->AddOnScreenDebugMessage(46780, 2, FColor::Red, FString::Printf(TEXT("Health Base Factory: %f"), CurrentHealthFactory));
+}
+
+void ABaseFactory::OnDeath()
+{
+	/*auto Temp = GetActorLocation();
+	AudioDeathEffect->Play();
+	DeathEffect->ActivateSystem();
+	SetActorLocation({ -1000, -1000, -1000 });
+	DeathEffect->SetWorldLocation(Temp);
+	AudioDeathEffect->SetWorldLocation(Temp);
+
+	GetWorld()->GetTimerManager().SetTimer(TimerDestruction, this, &ATurret::SelfDestruction, 3, false);*/
+
+	Destroy();
+
+	GetWorldTimerManager().ClearTimer(Timer);
+}

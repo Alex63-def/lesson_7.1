@@ -30,6 +30,8 @@ public:
 
 	void TakeDamageTank(FDamageData Damage);
 
+	void TakeDamageFactoty(FDamageData Damage);
+
 	float GetHealthTurret() const { return CurrentHealthTurret; }
 
 	float GetHealthTank() const { return CurrentHealthTank; }
@@ -45,10 +47,16 @@ protected:
 		float MaxHealthTurret = 10;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+		float MaxHealthFactory = 10;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 		float MaxHealthTank = 10;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		float CurrentHealthTurret;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		float CurrentHealthFactory;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		float CurrentHealthTank;
