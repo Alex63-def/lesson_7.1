@@ -7,6 +7,7 @@
 #include "lesson_3/lesson_3.h"
 #include "AmmoBox.h"
 #include "DrawDebugHelpers.h"
+#include "EnemyTankPawn.h"
 
 // Sets default values
 ATankPawn::ATankPawn()
@@ -139,6 +140,27 @@ void ATankPawn::Tick(float DeltaTime)
 	RotationTank(DeltaTime);
 	
 	RotationCannon(DeltaTime);
+
+	// лазерный прицел танка
+	if (auto Temp = Cast<AEnemyTankPawn>(this) == nullptr)
+	{
+		FHitResult Result;
+		FCollisionObjectQueryParams Params;
+		Params.AddObjectTypesToQuery(ECollisionChannel::ECC_Vehicle);
+		Params.AddObjectTypesToQuery(ECollisionChannel::ECC_WorldDynamic);
+		Params.AddObjectTypesToQuery(ECollisionChannel::ECC_WorldStatic);
+		FVector Start = { TurretMesh->GetComponentLocation().X, TurretMesh->GetComponentLocation().Y, TurretMesh->GetComponentLocation().Z + 5 };
+		auto End = TurretMesh->GetForwardVector() * 10000 + Start;
+		bool bHasHit = GetWorld()->LineTraceSingleByObjectType(Result, Start, End, Params);
+
+		if (bHasHit)
+		{
+			End = Result.Location;
+			auto Unit = Cast<AUnitPawn>(Result.GetActor());
+		}
+
+		DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, -1, 0, 1);
+	}
 }
 
 void ATankPawn::TakeDamage(FDamageData Damage)
@@ -523,23 +545,26 @@ void ATankPawn::RotationCannon(float DeltaTime)
 		}
 	}
 
-	// лазерный прицел танка
-	FHitResult Result;
-	FCollisionObjectQueryParams Params;
-	Params.AddObjectTypesToQuery(ECollisionChannel::ECC_Vehicle);
-	Params.AddObjectTypesToQuery(ECollisionChannel::ECC_WorldDynamic);
-	Params.AddObjectTypesToQuery(ECollisionChannel::ECC_WorldStatic);
-	FVector Start = { TurretMesh->GetComponentLocation().X, TurretMesh->GetComponentLocation().Y, TurretMesh->GetComponentLocation().Z + 5};
-	auto End = TurretMesh->GetForwardVector() * 10000 + Start;
-	bool bHasHit = GetWorld()->LineTraceSingleByObjectType(Result, Start, End, Params);
+	//if (auto Temp = Cast<AEnemyTankPawn>(this) == nullptr)
+	//{
+	//	// лазерный прицел танка
+	//	FHitResult Result;
+	//	FCollisionObjectQueryParams Params;
+	//	Params.AddObjectTypesToQuery(ECollisionChannel::ECC_Vehicle);
+	//	Params.AddObjectTypesToQuery(ECollisionChannel::ECC_WorldDynamic);
+	//	Params.AddObjectTypesToQuery(ECollisionChannel::ECC_WorldStatic);
+	//	FVector Start = { TurretMesh->GetComponentLocation().X, TurretMesh->GetComponentLocation().Y, TurretMesh->GetComponentLocation().Z + 5 };
+	//	auto End = TurretMesh->GetForwardVector() * 10000 + Start;
+	//	bool bHasHit = GetWorld()->LineTraceSingleByObjectType(Result, Start, End, Params);
 
-	if (bHasHit)
-	{
-		End = Result.Location;
-		auto Unit = Cast<AUnitPawn>(Result.GetActor());
-	}
+	//	if (bHasHit)
+	//	{
+	//		End = Result.Location;
+	//		auto Unit = Cast<AUnitPawn>(Result.GetActor());
+	//	}
 
-	DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 0.04, 0, 0.7);
+	//	DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 0.04, 0, 0.7);
+	//}
 }
 
 void ATankPawn::OnDeath()

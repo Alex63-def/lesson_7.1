@@ -50,17 +50,23 @@ void ABaseFactory::TakeDamage(FDamageData Damage)
 }
 
 void ABaseFactory::OnTankSpawnTick()
-{							// создает актор но не до конца, этим позволяя нам задать путь
-	auto Tank = GetWorld()->SpawnActorDeferred<AEnemyTankPawn>(TankClass, SpawnPoint->GetComponentTransform());
-																			// если фабрика имеет меньший размер то и акторы будут меньше
-	// теперь можно задать ему параметры которые нужно задать - в констракт - передаем их в танк
-	Tank->Waypoints = Waypoints;
+{	
+	if (MaxTanks != 0)
+	{
+		// создает актор но не до конца, этим позволяя нам задать путь
+		auto Tank = GetWorld()->SpawnActorDeferred<AEnemyTankPawn>(TankClass, SpawnPoint->GetComponentTransform());
+																				// если фабрика имеет меньший размер то и акторы будут меньше
+		// теперь можно задать ему параметры которые нужно задать - в констракт - передаем их в танк
+		Tank->Waypoints = Waypoints;
 
-	TanksSpawned++;
-	Tank->Number = TanksSpawned;
+		TanksSpawned++;
+		Tank->Number = TanksSpawned;
 
-	// заканчиваем создание танка, дальше он спавнится с заданными параметрами
-	UGameplayStatics::FinishSpawningActor(Tank, SpawnPoint->GetComponentTransform());
+		// заканчиваем создание танка, дальше он спавнится с заданными параметрами
+		UGameplayStatics::FinishSpawningActor(Tank, SpawnPoint->GetComponentTransform());
+
+		--MaxTanks;
+	}
 }													
 
 void ABaseFactory::OnHealthChanged(float CurrentHealthFactory)
