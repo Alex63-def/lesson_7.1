@@ -88,4 +88,10 @@ void ABaseFactory::OnDeath()
 	Destroy();
 
 	GetWorldTimerManager().ClearTimer(Timer);
+
+	// активируем триггер
+	if (LevelTrigger)
+	{
+		LevelTrigger->SetActive(true);
+	}
 }

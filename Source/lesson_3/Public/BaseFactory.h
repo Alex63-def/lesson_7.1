@@ -11,6 +11,7 @@
 #include "IScorable.h"
 #include "Engine/TargetPoint.h"
 #include "EnemyTankPawn.h"
+#include "LevelTrigger.h"
 #include "BaseFactory.generated.h"
 
 UCLASS()
@@ -49,6 +50,10 @@ public:
 	// интервал спавна в секундах
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Factory")
 		float SpawnInterval = 20;
+
+	// активируем переход на левел если фабрика убита
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Factory")
+		ALevelTrigger* LevelTrigger; 
 
 	virtual void TakeDamage(FDamageData Damage) override;
 
